@@ -2,7 +2,7 @@ import os
 
 import spotipy
 from dotenv import load_dotenv
-from spotipy.oauth2 import SpotifyClientCredentials
+from spotipy.oauth2 import SpotifyOAuth
 from mutagen.mp3 import MP3
 from colorama import Fore
 import sys
@@ -18,30 +18,32 @@ if not os.path.isdir(folder):
 load_dotenv()
 client_id = os.environ.get('SPOTIFY_CLIENT_ID')
 client_secret = os.environ.get('SPOTIFY_CLIENT_SECRET')
+playlist_id = os.environ.get('PLAYLIST_ID')
+REDIRECT_URI = 'http://localhost:8000/callback'
+SCOPE = 'user-read-private user-read-email playlist-modify-public'
 
-client_creds_manager = SpotifyClientCredentials(client_id=client_id, client_secret=client_secret)
-sp = spotipy.Spotify(client_credentials_manager=client_creds_manager)
+auth_manager = SpotifyOAuth(client_id=client_id, client_secret=client_secret, redirect_uri=REDIRECT_URI,scope=SCOPE)
+sp = spotipy.Spotify(auth_manager=auth_manager)
 
 print('Running Script in folder: ' + folder)
+trackIds = []
+batchIndex = 0
 for file in os.listdir(folder):
     if file.endswith('.mp3'):
-        audio = MP3(folder+'/'+file)
+        audio = MP3(folder + '/' + file)
         title = audio.get("TIT2").text[0]
         artist = audio.get("TPE1").text[0]
         search = title + ' ' + artist
-        print('adding ' + Fore.CYAN+file + Fore.RESET+' as: \'' + Fore.CYAN+search + Fore.RESET+'\'')
+        print('adding ' + Fore.CYAN + file + Fore.RESET + ' as: \'' + Fore.CYAN + search + Fore.RESET + '\'')
         results = sp.search(q=search, type='track', limit=1)
-        if len(results['tracks']['items']) > 0:
-            print(results['tracks']['items'][0]['uri'])
-        else:
-            print('track not found!, '+Fore.RED+search+Fore.RESET)
+        if len(results['tracks']['items']) == 0:
+            print('track not found!, ' + Fore.RED + search + Fore.RESET)
             continue
 
-
-
-
-
-
-
-
-
+        trackIds.append(results['tracks']['items'][0]['uri'])
+        if len(trackIds) >= 100:
+            sp.playlist_add_items(playlist_id, trackIds)
+            trackIds.clear()
+            batchIndex += 1
+            print(f"batch: {batchIndex} added!")
+sp.playlist_add_items(playlist_id, trackIds)
