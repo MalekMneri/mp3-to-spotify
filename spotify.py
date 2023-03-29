@@ -29,10 +29,13 @@ for file in os.listdir(folder):
         title = audio.get("TIT2").text[0]
         artist = audio.get("TPE1").text[0]
         search = title + ' ' + artist
-        print('adding ' + Fore.RED+file + Fore.RESET+' as: \'' + Fore.CYAN+search + Fore.RESET+'\'')
+        print('adding ' + Fore.CYAN+file + Fore.RESET+' as: \'' + Fore.CYAN+search + Fore.RESET+'\'')
         results = sp.search(q=search, type='track', limit=1)
-        print(results['tracks']['items'][0]['uri'])
-
+        if len(results['tracks']['items']) > 0:
+            print(results['tracks']['items'][0]['uri'])
+        else:
+            print('track not found!, '+Fore.RED+search+Fore.RESET)
+            continue
 
 
 
