@@ -1,5 +1,5 @@
 import os
-from auth import get_token, check_args, auth
+from auth import get_token, check_args, auth, add_tracks_to_playlist
 from colorama import Fore
 from dotenv import load_dotenv
 from helpers import get_search
@@ -22,11 +22,16 @@ for file in os.listdir(folder):
         if len(results['tracks']['items']) == 0:
             print('track not found!, ' + Fore.RED + search + Fore.RESET)
             continue
-        with open(f"batch_{batchIndex}.txt", 'a') as f:
-            f.write(results['tracks']['items'][0]['uri'] + ',')
-            count += 1
-
-        if count >= 90:
-            count = 0
-            batchIndex += 1
-            print(f"batch: {batchIndex} added!")
+        #with open(f"batch_{batchIndex}.txt", 'a') as f:
+        #    f.write(results['tracks']['items'][0]['uri'] + ',')
+        #    count += 1
+        trackIds.append(results['tracks']['items'][0]['uri'])
+        print(trackIds)
+        add_tracks_to_playlist(playlist_id, trackIds)
+        #sp.playlist_add_items(playlist_id=playlist_id, items=trackIds)
+        break
+        #if len(trackIds) >= 90:
+        #    sp.playlist_add_items(playlist_id=playlist_id, items=trackIds)
+        #    trackIds.clear()
+        #    batchIndex += 1
+        #    print(f"batch: {batchIndex} added!")

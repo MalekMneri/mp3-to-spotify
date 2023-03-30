@@ -14,21 +14,23 @@ redirect_url = os.environ.get('SPOTIFY_REDIRECT_URI')
 
 
 def get_token():
+    auth_manager = SpotifyClientCredentials(client_id=client_id, client_secret=client_secret)
+    return auth_manager.get_access_token()['access_token']
+
+
+def add_tracks_to_playlist(playlist_id, tracks):
     auth_header = base64.b64encode((client_id + ':' + client_secret).encode('ascii')).decode('ascii')
     auth_options = {
-        'url': 'https://accounts.spotify.com/api/token',
+        'url': f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks",
         'headers': {
-            'Authorization': 'Basic ' + auth_header
+            'Authorization': 'Bearer ' + get_token()
         },
         'data': {
-            'grant_type': 'client_credentials'
+           'uris': ','.join(tracks)
         }
     }
     response = requests.post(**auth_options)
-    token = response.json()['access_token']
-    return {"Authorization": "Bearer " + token}
-
-
+    print(response.json())
 def check_args():
     args = sys.argv[1:]
     if len(args) == 0:
@@ -43,11 +45,12 @@ def check_args():
 
 def auth():
     auth_manager = SpotifyClientCredentials(client_id=client_id, client_secret=client_secret)
-    # auth_manager = SpotifyOAuth(
-    #    client_id=client_id,
-    #    client_secret=client_secret,
-    #    redirect_uri=redirect_url,
-    #    scope=['playlist-modify-public'],
-    #    open_browser=False,
-    # )
+    #auth_manager = SpotifyOAuth(
+    #   client_id=client_id,
+    #   client_secret=client_secret,
+    #   redirect_uri=redirect_url,
+    #   scope='playlist-modify-public',
+    #)
+    token = auth_manager.get_access_token()
+    print(token)
     return spotipy.Spotify(auth_manager=auth_manager)
