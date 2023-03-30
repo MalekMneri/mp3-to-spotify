@@ -42,7 +42,12 @@ def check_args():
 
 
 def auth():
-
     auth_manager = SpotifyClientCredentials(client_id=client_id, client_secret=client_secret)
-    #auth_manager = SpotifyOAuth(client_id=client_id, client_secret=client_secret, redirect_uri=redirect_url)
+    # auth_manager = SpotifyOAuth(
+    #    client_id=client_id,
+    #    client_secret=client_secret,
+    #    redirect_uri=redirect_url,
+    #    scope=['playlist-modify-public'],
+    #    open_browser=False,
+    # )
     return spotipy.Spotify(auth_manager=auth_manager)

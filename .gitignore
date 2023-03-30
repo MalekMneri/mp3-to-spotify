@@ -3,4 +3,5 @@ venv
 .cache
 .idea
 .pylintrc
-track_ids*.txt
+batch_*.txt
+logs.txt
