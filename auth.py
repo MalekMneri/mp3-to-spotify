@@ -1,11 +1,10 @@
-import base64
+"""OS module"""
 import os
 import sys
 
-import requests
 from dotenv import load_dotenv
 import spotipy
-from spotipy.oauth2 import SpotifyOAuth, SpotifyClientCredentials
+from spotipy.oauth2 import SpotifyOAuth
 
 load_dotenv()
 client_id = os.environ.get('SPOTIFY_CLIENT_ID')
@@ -14,6 +13,7 @@ redirect_url = os.environ.get('SPOTIFY_REDIRECT_URI')
 
 
 def check_args():
+    """Verifies input"""
     args = sys.argv[1:]
     if len(args) == 0:
         print('please specify folder')
@@ -26,6 +26,7 @@ def check_args():
 
 
 def auth():
+    """redirects to callback path to authenticate user"""
     auth_manager = SpotifyOAuth(
         client_id=client_id,
         client_secret=client_secret,
@@ -33,5 +34,4 @@ def auth():
         scope='playlist-modify-public playlist-modify-private',
         open_browser=False
     )
-    token = auth_manager.get_access_token()
     return spotipy.Spotify(auth_manager=auth_manager)

@@ -1,30 +1,37 @@
+"""OS module"""
 import os
-from auth import check_args, auth
 from colorama import Fore
 from dotenv import load_dotenv
 from helpers import get_search
+from auth import check_args, auth
 
 load_dotenv()
-playlist_id = os.environ.get('PLAYLIST_ID')
+playlist_id = os.environ.get("PLAYLIST_ID")
 
-folder = check_args()
+FOLDER = check_args()
 sp = auth()
 
-print('Running Script in folder: ' + folder)
+print("Running Script in folder: " + FOLDER)
 trackIds = []
-batchIndex = 0
-for file in os.listdir(folder):
-    if file.endswith('.mp3'):
-        search = get_search(folder, file)
-        results = sp.search(q=search, type='track', limit=1)
-        if len(results['tracks']['items']) == 0:
-            print('track not found!, ' + Fore.RED + search + Fore.RESET)
-            continue
+BATCH_INDEX = 0
+for file in os.listdir(FOLDER):
+    if not file.endswith(".mp3"):
+        continue
 
-        trackIds.append(results['tracks']['items'][0]['uri'])
-        if len(trackIds) >= 100:
-            sp.playlist_add_items(playlist_id=playlist_id, items=trackIds)
-            trackIds.clear()
-            batchIndex += 1
-            print(f"batch: {batchIndex} added!")
+    search = get_search(FOLDER, file)
+    results = sp.search(q=search, type="track", limit=1)
+
+    if len(results["tracks"]["items"]) == 0:
+        print(f"track {Fore.RED}{search} {Fore.RESET}was not found!")
+        continue
+
+    trackIds.append(results["tracks"]["items"][0]["uri"])
+
+    if len(trackIds) >= 100:
+        sp.playlist_add_items(playlist_id=playlist_id, items=trackIds)
+        trackIds.clear()
+        BATCH_INDEX += 1
+        print(f"batch: {BATCH_INDEX} added!")
+
+# add last batch
 sp.playlist_add_items(playlist_id=playlist_id, items=trackIds)

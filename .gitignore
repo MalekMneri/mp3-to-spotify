@@ -3,5 +3,5 @@ venv
 .cache
 .idea
 .pylintrc
-batch_*.txt
 logs.txt
+__pycache__/
