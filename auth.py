@@ -1,4 +1,4 @@
-"""OS module"""
+"""auth and verification functions"""
 import os
 import sys
 

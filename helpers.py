@@ -1,4 +1,4 @@
-"""gets MP3 files' metadata"""
+"""helper functions"""
 from mutagen.mp3 import MP3
 from colorama import Fore
 

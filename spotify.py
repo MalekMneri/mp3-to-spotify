@@ -1,5 +1,6 @@
-"""OS module"""
+"""main file"""
 import os
+import sys
 from colorama import Fore
 from dotenv import load_dotenv
 from helpers import get_search
@@ -14,6 +15,7 @@ sp = auth()
 print("Running Script in folder: " + FOLDER)
 trackIds = []
 BATCH_INDEX = 0
+
 for file in os.listdir(FOLDER):
     if not file.endswith(".mp3"):
         continue
@@ -33,5 +35,8 @@ for file in os.listdir(FOLDER):
         BATCH_INDEX += 1
         print(f"batch: {BATCH_INDEX} added!")
 
-# add last batch
-sp.playlist_add_items(playlist_id=playlist_id, items=trackIds)
+if len(trackIds) == 0 and BATCH_INDEX == 0:
+    print(f"{Fore.RED}ERROR: {Fore.RESET}no mp3 files were found")
+else:
+    # add last batch
+    sp.playlist_add_items(playlist_id=playlist_id, items=trackIds)
