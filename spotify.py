@@ -1,6 +1,5 @@
 """main file"""
 import os
-import sys
 from colorama import Fore
 from dotenv import load_dotenv
 from helpers import get_search
